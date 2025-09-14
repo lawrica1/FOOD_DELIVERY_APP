@@ -1,23 +1,25 @@
 import "../globals.css";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList, View, Text, Pressable, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { FlatList, View, Text, Pressable, Image, TouchableOpacity } from 'react-native';
 import { images, offers } from '@/constants';
 import React, { Fragment } from "react";
 import cn from 'clsx';
 import CartButton from "@/components/CartButton";
+import useAuthStore from "@/store/auth.store";
 
 // The unused 'Button' import has been removed to fix the warning
-export default function index() {
+export default function Index() {
+    const { user } = useAuthStore();
+
+    console.log("USER", JSON.stringify(user, null, 2) );
+
     return (
-        // Use ScrollView to address the unused import warning
-        <ScrollView className='flex-1 bg-white'>
-            <SafeAreaView className='flex-1'>
+            <SafeAreaView className='flex-1 bg-white'>
 
                 <FlatList
                     data={offers}
                     renderItem={({ item, index }) => {
                         const isEven = index % 2 === 0;
-
                         return (
                             <View>
                                 <Pressable className={cn("offer-card", isEven ? 'flex-row-reverse' : 'flex-row')}
@@ -61,6 +63,6 @@ export default function index() {
                     )}
                 />
             </SafeAreaView>
-        </ScrollView>
+
     );
 }

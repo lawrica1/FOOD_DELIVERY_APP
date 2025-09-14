@@ -1,6 +1,5 @@
-import { Stack } from "expo-router";
+import { Stack, SplashScreen } from "expo-router";
 import { useFonts } from 'expo-font';
-import { SplashScreen } from 'expo-router';
 import { useEffect } from 'react';
 
 import './globals.css';
@@ -16,12 +15,18 @@ Sentry.init({
 
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+  replaysOnErrorSampleRate: 1.0,
+  integrations: [Sentry.mobileReplayIntegration({
+      maskAllText: true,
+      maskAllImages: true,
+      maskAllVectors: true,
+  }),
+      Sentry.feedbackIntegration()],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
 });
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,7 +34,7 @@ SplashScreen.preventAutoHideAsync();
 export default Sentry.wrap(function RootLayout() {
     const {isLoading, fetchAuthenticatedUser} = useAuthStore();
 
-    const [fontsLoaded] = useFonts({
+    const [fontsLoaded, error] = useFonts({
         'Quicksand-Bold': require('../assets/fonts/Quicksand-Bold.ttf'),
         'Quicksand-Medium': require('../assets/fonts/Quicksand-Medium.ttf'),
         'Quicksand-Regular': require('../assets/fonts/Quicksand-Regular.ttf'),
@@ -41,15 +46,15 @@ export default Sentry.wrap(function RootLayout() {
         if (fontsLoaded) {
             SplashScreen.hideAsync();
         }
-    }, [fontsLoaded]);
+    }, [fontsLoaded, error]);
 
     useEffect(() => {
-        fetchAuthenticatedUser();
+        fetchAuthenticatedUser()
     }, []);
 
-    if (!fontsLoaded || isLoading) {
-        return null; // or a custom loading component
-    }
+    if (!fontsLoaded || isLoading) return null; // or a custom loading component
+
 
     return <Stack screenOptions={{headerShown: false}} />;
 });
+
